@@ -62,12 +62,12 @@ public class AccountController {
 
     @FXML
     public void handleRegister() throws IOException {
-        FXMLLoader loaderRegister = new FXMLLoader();
-        loaderRegister.setLocation(getClass().getResource("/views/RegisterView.fxml"));
-        AnchorPane layout = loaderRegister.load();
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/views/RegisterView.fxml"));
+        AnchorPane layout = loader.load();
         primaryStage.setScene(new Scene(layout));
         primaryStage.setTitle("Register");
-        RegisterController controller = loaderRegister.getController();
+        RegisterController controller = loader.getController();
         controller.setFields(logged,usrv,fsrv,msrv,esrv, primaryStage);
     }
 
