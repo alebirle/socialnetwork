@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../css/Style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
+   <children>
+    <VBox alignment="BASELINE_CENTER" fillWidth="false" prefHeight="355.0" prefWidth="300.0" spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+          <Label alignment="CENTER" contentDisplay="CENTER" text="Create an account" textAlignment="CENTER">
+              <font>
+                  <Font size="21.0" />
+              </font>
+          </Label>
+                    <TextField fx:id="textFName" prefHeight="27.0" prefWidth="122.0" promptText="First name" />
+                    <TextField fx:id="textLName" prefHeight="27.0" prefWidth="122.0" promptText="Last name" />
+                    <TextField fx:id="textNewEmail" prefHeight="27.0" prefWidth="122.0" promptText="Email" />
+                    <PasswordField fx:id="textNewPassword" prefHeight="27.0" prefWidth="122.0" promptText="Password" />
+                    <PasswordField fx:id="textConfirmPassword" promptText="Confirm password" />
+                    <Button mnemonicParsing="false" onAction="#handleRegister" prefHeight="25.0" prefWidth="198.0" text="Register" />
+                    <Button mnemonicParsing="false" onAction="#handleCancel" prefHeight="25.0" prefWidth="198.0" text="Back" />
+      </children>
+   </VBox>
+   </children>
+</AnchorPane>

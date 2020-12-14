@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="450.0" prefWidth="800.0" stylesheets="@../css/Style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardController">
+    <children>
+        <GridPane layoutX="17.0" layoutY="9.0" prefHeight="370.0" prefWidth="704.0">
+            <columnConstraints>
+                <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="483.3333333333333" minWidth="10.0" prefWidth="483.3333333333333" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="294.0" minWidth="10.0" prefWidth="197.99999999999994" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <VBox alignment="CENTER" prefHeight="370.0" prefWidth="481.0" spacing="10.0">
+                    <children>
+                        <Label fx:id="welcome" text="Welcome">
+                            <font>
+                                <Font size="21.0" />
+                            </font>
+                        </Label>
+                        <GridPane hgap="10.0" prefHeight="30.0" prefWidth="192.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="378.0" minWidth="10.0" prefWidth="378.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="125.0" minWidth="-5.6843418860808015E-14" prefWidth="-5.6843418860808015E-14" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <TextField fx:id="textSearch" prefHeight="3.0" prefWidth="378.0" promptText="Search users" />
+                                <CheckBox fx:id="friends" mnemonicParsing="false" onAction="#handleCheckBox" selected="true" text="Only friends" GridPane.columnIndex="1" />
+                            </children>
+                        </GridPane>
+                        <TableView fx:id="tableView" prefHeight="245.0" prefWidth="363.0">
+                            <columns>
+                                <TableColumn fx:id="tableColumnFName" prefWidth="75.0" text="First Name" />
+                                <TableColumn fx:id="tableColumnLName" prefWidth="75.0" text="Last Name" />
+                                <TableColumn fx:id="tableColumnEmail" prefWidth="75.0" text="Email Address" />
+                                <TableColumn fx:id="tableColumnStatus" prefWidth="75.0" text="Status" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                        <Pagination fx:id="pagination" prefHeight="500.0" prefWidth="361.0" />
+                        <GridPane hgap="10.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <Button fx:id="buttonSendRequest" disable="true" mnemonicParsing="false" onAction="#handleSendRequest" prefHeight="25.0" prefWidth="129.0" text="Send friend request" visible="false" />
+                                <Button fx:id="buttonRemoveFriend" disable="true" mnemonicParsing="false" onAction="#handleRemoveFriend" prefHeight="25.0" prefWidth="129.0" text="Remove friend" visible="false" />
+                                <Button fx:id="buttonCancelRequest" disable="true" mnemonicParsing="false" onAction="#handleCancelRequest" text="Cancel friend request" visible="false" />
+                                <Button fx:id="buttonShowMessages" disable="true" mnemonicParsing="false" onAction="#handleShowMessages" prefHeight="25.0" prefWidth="129.0" text="Your messages" visible="false" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+                            </children>
+                        </GridPane>
+                    </children>
+                </VBox>
+            <GridPane prefHeight="251.0" prefWidth="220.0" vgap="10.0" GridPane.columnIndex="1" GridPane.fillHeight="false">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                        <Button mnemonicParsing="false" onAction="#handleShowRequests" text="Show friend requests" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                        <Button mnemonicParsing="false" onAction="#handleActivity" prefHeight="25.0" prefWidth="127.0" text="Your activity" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                        <Button mnemonicParsing="false" onAction="#handleNewMessage" text="New message" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+                        <Button mnemonicParsing="false" onAction="#handleEvents" text="Events" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+                        <Button mnemonicParsing="false" onAction="#handleLogout" prefHeight="25.0" prefWidth="127.0" text="Logout" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
+                  <MenuButton fx:id="notifications" alignment="CENTER" mnemonicParsing="false" text="Notifications" GridPane.halignment="CENTER">
+                  </MenuButton>
+               </children>
+            </GridPane>
+            </children>
+        </GridPane>
+      <Label fx:id="noOfNotifications" layoutX="660.0" layoutY="63.0" text="1" />
+    </children>
+</AnchorPane>

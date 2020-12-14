@@ -1,0 +1,32 @@
+.button {
+    -fx-text-fill: white;
+    -fx-font-family: "Arial Narrow";
+    -fx-pref-width: 30.0;
+    -fx-pref-height: 30.0;
+    -fx-font-weight: bold;
+    -fx-background-color: #61a79f;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+.root{
+    -fx-background-color: #c3d9d6;
+    -fx-focus-color: transparent;
+    -fx-selection-bar: #c3d9d6;
+    -fx-selection-bar-non-focused: #e7efee;
+}
+.table-view{
+    -fx-focus-color: transparent;
+    -fx-selection-bar: #c3d9d6;
+    -fx-selection-bar-non-focused: #e7efee;
+}
+.date-picker-popup > * > .date-cell {
+    -fx-focus-color: transparent;
+    -fx-selection-bar: #c3d9d6;
+    -fx-selection-bar-non-focused: #e7efee;
+}
+.date-picker-popup > * > .week-number-cell {
+    -fx-text-fill: #61a79f;
+}
+
+.date-picker > .arrow-button {
+    -fx-background-color: #61a79f;
+}
