@@ -16,13 +16,13 @@ public class Tests {
         Repository<Tuple<Long,Long>, Friendship> friendshipMemRepository=new InMemoryRepository<>(new FriendshipValidator());
         UserService us=new UserService(userMemRepository);
         FriendshipService fs=new FriendshipService(friendshipMemRepository);
-        User user=new User("a","a");
+        User u1=new User("a","a");
         User u2=new User("b","b");
         User u3=new User("c","c");
         User u4=new User("d","d");
         User u5=new User("e","e");
         User u6=new User("f","f");
-        assert(us.addUser(user)==null);
+        assert(us.addUser(u1)==null);
         assert(us.addUser(u2)==null);
         assert(us.addUser(u3)==null);
         assert(us.addUser(u4)==null);
