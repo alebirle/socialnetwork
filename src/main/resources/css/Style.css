@@ -4,7 +4,7 @@
     -fx-pref-width: 160.0;
     -fx-pref-height: 30.0;
     -fx-font-weight: bold;
-    -fx-background-color: #61a79f;
+    -fx-background-color: purple;
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
     -fx-focus-color: transparent;
 }
