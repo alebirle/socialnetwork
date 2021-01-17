@@ -26,7 +26,45 @@ public class EventDbRepository implements Repository<Long,Event> {
 
     @Override
     public Iterable<Event> findSome(User u, String s) {
-        return null;
+        Set<Event> events=new HashSet<>();
+        String[] s2=s.split(" ");
+        String query="";
+        if(s2[0].equals("Going")&&s2[1].equals("Upcoming"))
+            query="SELECT * FROM events e INNER JOIN users_events ue ON e.id=ue.event_id where ue.user_id="+u.getId()+"and e.end_date>'"+LocalDateTime.now()+"' order by e.end_date desc offset "+s2[2]+" limit 3";
+        if(s2[0].equals("Going")&&s2[1].equals("Past"))
+            query="SELECT * FROM events e INNER JOIN users_events ue ON e.id=ue.event_id where ue.user_id="+u.getId()+"and e.end_date<'"+LocalDateTime.now()+"' order by e.end_date desc offset "+s2[2]+" limit 3";
+        if(s2[0].equals("Going")&&s2[1].equals("Anytime"))
+            query="SELECT * FROM events e INNER JOIN users_events ue ON e.id=ue.event_id where ue.user_id="+u.getId()+" order by e.end_date desc offset "+s2[2]+" limit 3";
+        if(s2[0].equals("Yours")&&s2[1].equals("Upcoming"))
+            query="SELECT * FROM events where owner="+u.getId()+" and events.end_date>'"+LocalDateTime.now()+"' order by events.end_date desc offset "+s2[2]+" limit 3";
+        if(s2[0].equals("Yours")&&s2[1].equals("Past"))
+            query="SELECT * FROM events where owner="+u.getId()+" and events.end_date<'"+LocalDateTime.now()+"' order by events.end_date desc offset "+s2[2]+" limit 3";
+        if(s2[0].equals("Yours")&&s2[1].equals("Anytime"))
+            query="SELECT * FROM events where owner="+u.getId()+" order by events.end_date desc offset "+s2[2]+" limit 3";
+        if(s2[0].equals("All")&&s2[1].equals("Upcoming"))
+            query="SELECT * FROM events where end_date>'"+LocalDateTime.now()+"' order by events.end_date desc offset "+s2[2]+" limit 3";
+        if(s2[0].equals("All")&&s2[1].equals("Past"))
+            query="SELECT * FROM events where end_date<'"+LocalDateTime.now()+"' order by events.end_date desc offset "+s2[2]+" limit 3";
+        if(s2[0].equals("All")&&s2[1].equals("Anytime"))
+            query="SELECT * FROM events order by events.end_date desc offset "+s2[2]+" limit 3";
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement(query)){
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()) {
+                Long idEvent = resultSet.getLong("id");
+                String name = resultSet.getString("name");
+                String description = resultSet.getString("description");
+                Long owner = resultSet.getLong("owner");
+                LocalDateTime start_date = resultSet.getTimestamp("start_date").toLocalDateTime();
+                LocalDateTime end_date = resultSet.getTimestamp("end_date").toLocalDateTime();
+                Event event=new Event(name,description,owner,start_date,end_date);
+                event.setId(idEvent);
+                events.add(event);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return events;
     }
 
     @Override
@@ -90,7 +128,7 @@ public class EventDbRepository implements Repository<Long,Event> {
                 while(resultSet.next()){
                     e.setId(resultSet.getLong("maximum"));
                 }
-            statement.executeUpdate("INSERT INTO users_events(user_id,event_id,notify) values ("+entity.getOwnerId()+","+e.getId()+",true)");
+            statement.executeUpdate("INSERT INTO users_events(user_id,event_id,notify,last_seen) values ("+entity.getOwnerId()+","+e.getId()+",true,10)");
         }
         catch (Exception exception){
             exception.printStackTrace();
@@ -135,7 +173,18 @@ public class EventDbRepository implements Repository<Long,Event> {
 
     @Override
     public int getNr() {
-        return 0;
+        int nr=0;
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement("SELECT count(id) as nr from events")){
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()) {
+                nr=resultSet.getInt("nr");
+            }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        return nr;
     }
 
     @Override

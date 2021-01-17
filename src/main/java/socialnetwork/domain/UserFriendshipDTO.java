@@ -1,15 +1,16 @@
 package socialnetwork.domain;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class UserFriendshipDTO extends Entity<Long>{
     private String fname;
     private String lname;
     private String email;
-    private LocalDateTime date;
+    private LocalDate date;
     private String status;
 
-    public UserFriendshipDTO(String fname,String lname,String email,LocalDateTime date,String status){
+    public UserFriendshipDTO(String fname,String lname,String email,LocalDate date,String status){
         this.fname=fname;
         this.lname=lname;
         this.email=email;
@@ -41,11 +42,11 @@ public class UserFriendshipDTO extends Entity<Long>{
         this.email = email;
     }
 
-    public LocalDateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

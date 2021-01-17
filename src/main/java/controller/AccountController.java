@@ -45,7 +45,7 @@ public class AccountController {
             MessageAlert.showErrorMessage(null,"There's no account with that email address");
             return;
         }
-        if(logged.getPassword().contains("$2b$")){
+        if(logged.getPassword().contains("$2a$")){
             if(!MyBcrypt.verifyHash(textPassword.getText(),logged.getPassword())){
                 MessageAlert.showErrorMessage(null,"Email and password don't match!");
                 return;

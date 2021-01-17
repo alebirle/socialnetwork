@@ -30,8 +30,12 @@ public class MessageDbRepository implements Repository<Long, Message> {
         String query="SELECT * from messages";
         if(s.equals("from"))
             query+=" where m_from=?";
-        if(s.equals("to"))
-            query+=" where m_to=?";
+        else {
+            if (s.equals("to"))
+                query += " where m_to=?";
+            else
+                query += " where m_from=? and m_to="+u.getEmail()+" or m_to="+u.getId()+" and m_from="+u.getEmail()+" order by id desc fetch first "+s+" rows only";
+        }
         try (Connection connection = DriverManager.getConnection(url, username, password);
                 PreparedStatement statement = connection.prepareStatement(query)){
             statement.setBigDecimal(1, BigDecimal.valueOf(u.getId()));
@@ -157,7 +161,17 @@ public class MessageDbRepository implements Repository<Long, Message> {
 
     @Override
     public int getNr() {
-        return 0;
+        int nr=0;
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement statement = connection.prepareStatement("SELECT count(id) as nr from messages")){
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()) {
+                nr= resultSet.getInt("nr");
+            }
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return nr;
     }
 
     @Override

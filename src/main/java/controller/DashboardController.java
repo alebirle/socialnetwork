@@ -34,6 +34,7 @@ import javax.swing.text.html.ListView;
 import java.awt.*;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -83,6 +84,7 @@ public class DashboardController implements Observer {
     ObservableList<UserFriendshipDTO> users = FXCollections.observableArrayList();
     private Stage primaryStage;
     private EventService esrv;
+    private List<Event> myEvents=new ArrayList<>();
 
     public void initFriends(){
         users.clear();
@@ -95,7 +97,7 @@ public class DashboardController implements Observer {
                 .filter(x->x.getId().getLeft().equals(logged.getId()))
                 .forEach(x->{
                     User f=usrv.getOne(x.getId().getRight());
-                    UserFriendshipDTO uf=new UserFriendshipDTO(f.getFirstName(),f.getLastName(),f.getEmail(),x.getDate(),x.getStatus());
+                    UserFriendshipDTO uf=new UserFriendshipDTO(f.getFirstName(),f.getLastName(),f.getEmail(),x.getDate().toLocalDate(),x.getStatus());
                     if(x.getStatus().equals("Accepted"))
                         uf.setStatus("Friends");
                     if(x.getStatus().equals("Rejected"))
@@ -109,7 +111,7 @@ public class DashboardController implements Observer {
                 .filter(x->x.getId().getRight().equals(logged.getId()))
                 .forEach(x->{
                     User f=usrv.getOne(x.getId().getLeft());
-                    UserFriendshipDTO uf=new UserFriendshipDTO(f.getFirstName(),f.getLastName(),f.getEmail(),x.getDate(),x.getStatus());
+                    UserFriendshipDTO uf=new UserFriendshipDTO(f.getFirstName(),f.getLastName(),f.getEmail(),x.getDate().toLocalDate(),x.getStatus());
                     if(x.getStatus().equals("Accepted"))
                         uf.setStatus("Friends");
                     if(x.getStatus().equals("Rejected"))
@@ -146,17 +148,18 @@ public class DashboardController implements Observer {
         for(Event e:esrv.getAll()){
             if(esrv.getExists(logged.getId(), e.getId())){
                 if(e.getEndAt().isAfter(LocalDateTime.now())){
+                    myEvents.add(e);
                     if(e.getStartAt().isBefore(LocalDateTime.now()))
                         notifications.getItems().add(new MenuItem("Event '"+e.getName()+"' is happening now."));
                     else{
                         Long days= ChronoUnit.DAYS.between(LocalDateTime.now(),e.getStartAt());
-                        if(days.equals(0))
+                        if(days.equals(0)&&esrv.getLastSeen(logged.getId(), e.getId())>0)
                             notifications.getItems().add(new MenuItem("Event '"+e.getName()+"' is today"));
                         else
-                            if(days.equals(1))
+                            if(days.equals(1)&&esrv.getLastSeen(logged.getId(), e.getId())>1)
                                 notifications.getItems().add(new MenuItem("Event '"+e.getName()+"' is in one day"));
                             else
-                                if(days<7)
+                                if(days<7&&esrv.getLastSeen(logged.getId(), e.getId())>days)
                                     notifications.getItems().add(new MenuItem("Event '"+e.getName()+"' is in "+days+" days"));
                     }
                 }
@@ -170,6 +173,7 @@ public class DashboardController implements Observer {
             noOfNotifications.setVisible(true);
             noOfNotifications.setText(" "+notifications.getItems().size()+" ");
         }
+        notifications.showingProperty().addListener(x->handleNotifications());
     }
 
     private void handlePage() {
@@ -382,16 +386,18 @@ public class DashboardController implements Observer {
 
     private void setDTO(List<User> u) {
         for(User user:u){
-            UserFriendshipDTO uf=new UserFriendshipDTO(user.getFirstName(),user.getLastName(),user.getEmail(), LocalDateTime.now(),fsrv.getStatus(logged.getId(),user.getId()));
-            if(uf.getStatus().isEmpty()||uf.getStatus().equals("Rejected")||uf.getStatus().equals("None"))
-                uf.setStatus("Not friends");
-            else {
-                if (uf.getStatus().equals("Accepted"))
-                    uf.setStatus("Friends");
-                else
-                    uf.setStatus("Request sent");
+            if(!user.getId().equals(logged.getId())) {
+                UserFriendshipDTO uf = new UserFriendshipDTO(user.getFirstName(), user.getLastName(), user.getEmail(), LocalDate.now(), fsrv.getStatus(logged.getId(), user.getId()));
+                if (uf.getStatus().isEmpty() || uf.getStatus().equals("Rejected") || uf.getStatus().equals("None"))
+                    uf.setStatus("Not friends");
+                else {
+                    if (uf.getStatus().equals("Accepted"))
+                        uf.setStatus("Friends");
+                    else
+                        uf.setStatus("Request sent");
+                }
+                users.add(uf);
             }
-            users.add(uf);
         }
     }
 
@@ -413,5 +419,11 @@ public class DashboardController implements Observer {
         primaryStage.setTitle("Events");
         EventsController controller = loader.getController();
         controller.setFields(logged,usrv,fsrv,msrv,esrv, primaryStage);
+    }
+
+    public void handleNotifications() {
+        for(Event e:myEvents){
+            esrv.setNotify(logged.getId(), e.getId(),true, (int) ChronoUnit.DAYS.between(LocalDateTime.now(),e.getStartAt()));
+        }
     }
 }

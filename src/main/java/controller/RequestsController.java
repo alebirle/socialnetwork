@@ -96,7 +96,7 @@ public class RequestsController {
             if (f.getStatus() != null && f.getStatus().equals("Pending"))
                 if (logged.getId().equals(f.getId().getRight())) {
                     User u=usrv.getOne(f.getId().getLeft());
-                    UserFriendshipDTO ufd=new UserFriendshipDTO(u.getFirstName(),u.getLastName(),u.getEmail(),f.getDate(),f.getStatus());
+                    UserFriendshipDTO ufd=new UserFriendshipDTO(u.getFirstName(),u.getLastName(),u.getEmail(),f.getDate().toLocalDate(),f.getStatus());
                     model.add(ufd);
                 }
         }

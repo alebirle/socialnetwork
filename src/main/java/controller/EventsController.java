@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -28,7 +29,9 @@ import java.util.stream.Collectors;
 
 public class EventsController {
     @FXML
-    ChoiceBox<String> filter;
+    ChoiceBox<String> filterWhich;
+    @FXML
+    ChoiceBox<String> filterWhen;
     @FXML
     ListView<Event> listView;
     @FXML
@@ -43,6 +46,8 @@ public class EventsController {
     Button buttonMute;
     @FXML
     Button buttonUnmute;
+    @FXML
+    Pagination pagination;
     ObservableList<Event> events= FXCollections.observableArrayList();
     User logged;
     UserService usrv;
@@ -57,14 +62,44 @@ public class EventsController {
         search.setFocusTraversable(false);
         listView.getSelectionModel().selectedItemProperty().addListener(x->handleSelection());
         search.textProperty().addListener(x->handleFilter());
+        filterWhich.getSelectionModel().selectedItemProperty().addListener(x->handleFilter());
+        filterWhen.getSelectionModel().selectedItemProperty().addListener(x->handleFilter());
+        pagination.setPageFactory(this::createPage);
+        pagination.currentPageIndexProperty().addListener(x->handlePage());
+        listView.setPlaceholder(new Label("There are no events"));
+    }
+
+    private void handlePage() {
+        handleFilter();
+    }
+
+    private ListView createPage(Integer integer) {
+        return listView;
     }
 
     private void handleFilter() {
-        Predicate<Event> namePredicate = x -> {
-            String s = x.getName() + " " + x.getDescription();
-            return s.contains(search.getText());
-        };
-        events.setAll(events.stream().filter(namePredicate).collect(Collectors.toList()));
+        initEvents();
+        if (!search.getText().isEmpty()) {
+            Predicate<Event> namePredicate = x -> {
+                String s = x.getName() + " " + x.getDescription();
+                if(filterWhich.getSelectionModel().getSelectedItem().equals("Yours")&&!x.getOwnerId().equals(logged.getId()))
+                    return false;
+                if(filterWhich.getSelectionModel().getSelectedItem().equals("Going")&&!esrv.getExists(logged.getId(), x.getId()))
+                    return false;
+                if(filterWhen.getSelectionModel().getSelectedItem().equals("Past")&&x.getEndAt().isAfter(LocalDateTime.now()))
+                    return false;
+                if(filterWhen.getSelectionModel().getSelectedItem().equals("Upcoming")&&x.getEndAt().isBefore(LocalDateTime.now()))
+                    return false;
+                return s.contains(search.getText());
+            };
+            List<Event> e=new ArrayList<>();
+            esrv.getAll().forEach(e::add);
+            events.setAll(e.stream().filter(namePredicate).collect(Collectors.toList()));
+        }
+        if(events.isEmpty())
+            pagination.setPageCount(1);
+        else
+            pagination.setPageCount((int)Math.ceil((float)esrv.getNr(logged,filterWhich.getSelectionModel().getSelectedItem(),filterWhen.getSelectionModel().getSelectedItem())/(float)3));
     }
 
     private void initButtons(List<Boolean> b){
@@ -83,6 +118,11 @@ public class EventsController {
     }
 
     private void handleSelection() {
+        if(listView.getSelectionModel().getSelectedItem()==null) {
+            initButtons(Arrays.asList(false,true,false,true,false,true));
+            initMute(Arrays.asList(false,true,false,true));
+            return;
+        }
         Event event=listView.getSelectionModel().getSelectedItem();
         if(event.getOwnerId().equals(logged.getId())){
             initButtons(Arrays.asList(false,true,true,false,false,true));
@@ -112,9 +152,29 @@ public class EventsController {
 
     public void initEvents(){
         events.clear();
-        for(Event e:esrv.getAll()) {
+        listView.getSelectionModel().clearSelection();
+        /*for(Event e:esrv.getAll()) {
             events.add(e);
         }
+        if(filterWhich.getSelectionModel().getSelectedItem().equals("Yours")){
+            events.setAll(events.stream().filter(x->x.getOwnerId().equals(logged.getId())).collect(Collectors.toList()));
+        }
+        if(filterWhich.getSelectionModel().getSelectedItem().equals("Going")){
+            events.setAll(events.stream().filter(x-> esrv.getExists(logged.getId(), x.getId())).collect(Collectors.toList()));
+        }
+        if(filterWhen.getSelectionModel().getSelectedItem().equals("Upcoming")){
+            events.setAll(events.stream().filter(x-> x.getEndAt().isAfter(LocalDateTime.now())).collect(Collectors.toList()));
+        }
+        if(filterWhen.getSelectionModel().getSelectedItem().equals("Past")){
+            events.setAll(events.stream().filter(x-> x.getEndAt().isBefore(LocalDateTime.now())).collect(Collectors.toList()));
+        }*/
+        for(Event e:esrv.getSome(logged,filterWhich.getSelectionModel().getSelectedItem()+" "+filterWhen.getSelectionModel().getSelectedItem()+" "+String.valueOf(pagination.getCurrentPageIndex()*3)))
+            events.add(e);
+        events.sort((x,y)->{if(x.getEndAt().isBefore(y.getEndAt())) return 1; else return 0;});
+        if(events.isEmpty())
+            pagination.setPageCount(1);
+        else
+            pagination.setPageCount((int)Math.ceil((float)esrv.getNr(logged,filterWhich.getSelectionModel().getSelectedItem(),filterWhen.getSelectionModel().getSelectedItem())/(float)3));
     }
 
     public void setFields(User logged, UserService usrv, FriendshipService fsrv, MessageService msrv, EventService esrv, Stage primaryStage) {
@@ -134,7 +194,7 @@ public class EventsController {
     }
 
     public void handleMute() {
-        esrv.setNotify(logged.getId(), listView.getSelectionModel().getSelectedItem().getId(),false);
+        esrv.setNotify(logged.getId(), listView.getSelectionModel().getSelectedItem().getId(),false,10);
         MessageAlert.showMessage(null, Alert.AlertType.INFORMATION,"Success!","You will no longer receive notifications for this event");
         handleSelection();
     }
@@ -177,7 +237,7 @@ public class EventsController {
     }
 
     public void handleUnmute() {
-        esrv.setNotify(logged.getId(), listView.getSelectionModel().getSelectedItem().getId(),true);
+        esrv.setNotify(logged.getId(), listView.getSelectionModel().getSelectedItem().getId(),true,10);
         MessageAlert.showMessage(null, Alert.AlertType.INFORMATION,"Success!","You will now receive notifications for this event");
         handleSelection();
     }

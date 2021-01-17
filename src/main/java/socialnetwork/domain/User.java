@@ -12,6 +12,11 @@ public class User extends Entity<Long>{
     private List<User> friends;
 
     public User(){friends=new ArrayList<>();}
+    public User(Long id, String email){
+        this.setId(id);
+        this.email=email;
+        friends=new ArrayList<>();
+    }
     public User(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;

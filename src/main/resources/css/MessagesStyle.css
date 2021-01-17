@@ -8,7 +8,10 @@
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
     -fx-focus-color: transparent;
 }
-
+.label{
+    -fx-wrap-text: true;
+    -fx-text-fill: #365f5b;
+}
 .root{
     -fx-background-color: #c3d9d6;
 }
@@ -64,9 +67,24 @@
 }
 .list-view{
     -fx-focus-color: transparent;
-    -fx-selection-bar: #c3d9d6;
+    -fx-selection-bar: #e7efee;
     -fx-selection-bar-non-focused: #e7efee;
 }
+.list-view .list-cell{
+    -fx-background-color: white;
+}
+.list-view .list-cell:selected{
+    -fx-background-color: #e7efee;
+}
+.list-view .scroll-bar{
+    -fx-background-color:#e7efee;
+}
+.list-view .scroll-bar:vertical .thumb{
+    -fx-background-color: #61a79f;
+}
 .date-picker:focused{
+    -fx-focus-color: transparent;
+}
+.text-field:focused {
     -fx-focus-color: transparent;
 }

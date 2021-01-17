@@ -1,6 +1,7 @@
 package socialnetwork.service;
 
 import socialnetwork.domain.Event;
+import socialnetwork.domain.User;
 import socialnetwork.repository.Repository;
 import socialnetwork.repository.database.UserEventDbRepository;
 
@@ -32,8 +33,14 @@ public class EventService {
     public Event getOne(Long id){
         return eRepo.findOne(id);
     }
-    public boolean setNotify(Long idUser, Long idEvent, boolean notify){
-        return ueRepo.update(idUser,idEvent,notify);
+    public boolean setNotify(Long idUser, Long idEvent, boolean notify, int lastSeen){
+        return ueRepo.update(idUser,idEvent,notify,lastSeen);
+    }
+    public Iterable<Event> getSome(User u, String s){
+        return eRepo.findSome(u,s);
+    }
+    public int getNr(User u,String which, String when){
+        return ueRepo.getNr(u,which,when);
     }
     public boolean addParticipant(Long idUser, Long idEvent){
         return ueRepo.save(idUser, idEvent);
@@ -43,4 +50,5 @@ public class EventService {
     }
     public boolean getNotifications(Long idUser,Long idEvent){return ueRepo.findNotification(idUser,idEvent);}
     public boolean getExists(Long idUser, Long idEvent){return ueRepo.findOne(idUser,idEvent);}
+    public int getLastSeen(Long idUser,Long idEvent){return ueRepo.findLastSeen(idUser,idEvent);}
 }

@@ -12,6 +12,8 @@ public class MessageService {
     }
 
     public Message save(Message message){
+        if(message.getMessage().contains("'"))
+            message.setMessage(message.getMessage().replaceAll("'", "$0$0"));
         return repo.save(message);
     }
     public Message getOne(Long id){
@@ -25,4 +27,5 @@ public class MessageService {
     public Iterable<Message> getSome(User u, String s) {
         return repo.findSome(u,s);
     }
+    public int getNr(){return repo.getNr();}
 }
