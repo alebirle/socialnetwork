@@ -176,7 +176,7 @@ public class FriendshipDbRepository implements Repository<Tuple<Long,Long>, Frie
         if(f.getId()!=null){
             try (Connection connection = DriverManager.getConnection(url, username, password);
                  Statement statement = connection.createStatement()){
-                statement.executeUpdate("UPDATE friendships SET status='"+entity.getStatus()+"', date='"+entity.getDate()+"' WHERE id1="+f.getId().getLeft()+" AND id2="+f.getId().getRight());
+                statement.executeUpdate("UPDATE friendships SET status='"+entity.getStatus()+"', date='"+entity.getDate()+"' WHERE id1="+f.getId().getLeft()+" AND id2="+f.getId().getRight()+" OR id1="+f.getId().getRight()+" AND id2="+f.getId().getLeft());
 
             } catch (SQLException e) {
                 e.printStackTrace();
